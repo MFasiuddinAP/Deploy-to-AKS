@@ -45,44 +45,45 @@ stages:
     pool: 
       vmImage: ubuntu-latest
 
-      steps:
-      - task: DownloadPipelineArtifact@2
-        displayName: Downloading Artifacts
-        inputs:
-          buildType: 'current'
-          artifactName: 'manifests'
-          targetPath: '$(Pipeline.Workspace)/manifests'
+    steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: Downloading Artifacts
+      inputs:
+        buildType: 'current'
+        artifactName: 'manifests'
+        targetPath: '$(Pipeline.Workspace)/manifests'
 
-      - task: KubernetesManifest@0
-        displayName: Creating Secrets in K8s
-        inputs:
-          action: 'createSecret'
-          namespace: 'default'
-          secretType: 'dockerRegistry'
-          secretName: '$(acrsecret)'
-          dockerRegistryEndpoint: 'AZR-BTE-CTS-DEV-AZCR'
-          
-      - task: replacetokens@3
-        displayName: Replace Tokens
-        inputs:
-          rootDirectory: '$(Pipeline.Workspace)/manifests/'
-          targetFiles: 'deployment.yml'
-          encoding: 'auto'
-          writeBOM: true
-          actionOnMissing: 'warn'
-          keepToken: false
-          tokenPrefix: '#'
-          tokenSuffix: '#'
-          useLegacyPattern: false
-          enableTransforms: false
-          enableTelemetry: true
-      - task: KubernetesManifest@0
-        displayName: Publishing Manifest files
-        inputs:
-          action: 'deploy'
-          namespace: 'default'
-          manifests: |
-            $(Pipeline.Workspace)/manifests/deployment.yml
-            $(Pipeline.Workspace)/manifests/service.yml
-          containers: '$(acrdevurl)/$(imageRepo):$(tag)'
-          imagePullSecrets: '$(acrsecret)'
+    - task: KubernetesManifest@0
+      displayName: Creating Secrets in K8s
+      inputs:
+        action: 'createSecret'
+        namespace: 'default'
+        secretType: 'dockerRegistry'
+        secretName: '$(acrsecret)'
+        dockerRegistryEndpoint: 'AZR-BTE-CTS-DEV-AZCR'
+        
+    - task: replacetokens@3
+      displayName: Replace Tokens
+      inputs:
+        rootDirectory: '$(Pipeline.Workspace)/manifests/'
+        targetFiles: 'deployment.yml'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#'
+        tokenSuffix: '#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+
+    - task: KubernetesManifest@0
+      displayName: Publishing Manifest files
+      inputs:
+        action: 'deploy'
+        namespace: 'default'
+        manifests: |
+          $(Pipeline.Workspace)/manifests/deployment.yml
+          $(Pipeline.Workspace)/manifests/service.yml
+        containers: '$(acrdevurl)/$(imageRepo):$(tag)'
+        imagePullSecrets: '$(acrsecret)'
