@@ -47,12 +47,14 @@ stages:
 
       steps:
       - task: DownloadPipelineArtifact@2
+        displayName: Downloading Artifacts
         inputs:
           buildType: 'current'
           artifactName: 'manifests'
           targetPath: '$(Pipeline.Workspace)/manifests'
 
       - task: KubernetesManifest@0
+        displayName: Creating Secrets in K8s
         inputs:
           action: 'createSecret'
           namespace: 'default'
@@ -75,6 +77,7 @@ stages:
           enableTransforms: false
           enableTelemetry: true
       - task: KubernetesManifest@0
+        displayName: Publishing Manifest files
         inputs:
           action: 'deploy'
           namespace: 'default'
