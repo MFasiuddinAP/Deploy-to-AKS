@@ -90,13 +90,3 @@ stages:
         containers: '$(acrdevurl)/$(imageRepo):$(tag)'
         imagePullSecrets: '$(acrsecret)'
 
-    - task: KubernetesManifest@0
-      displayName: Publishing Manifest files
-      inputs:
-        action: 'deploy'
-        namespace: 'default'
-        manifests: |
-          $(Pipeline.Workspace)/manifests/deployment.yml
-          $(Pipeline.Workspace)/manifests/service.yml
-        containers: '$(acrdevurl)/$(imageRepo):$(tag)'
-        imagePullSecrets: '$(acrsecret)'
