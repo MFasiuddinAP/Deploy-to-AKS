@@ -42,7 +42,6 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy to AKS
-    environment: 'k8sdev.default'
     pool: 
       vmImage: ubuntu-latest
     strategy:
@@ -54,13 +53,15 @@ stages:
               buildType: 'current'
               artifactName: 'manifests'
               targetPath: '$(Pipeline.Workspace)/manifests'
+
           - task: KubernetesManifest@0
             inputs:
               action: 'createSecret'
               namespace: 'default'
               secretType: 'dockerRegistry'
               secretName: '$(acrsecret)'
-              dockerRegistryEndpoint: 'K8SExamplesACR'
+              dockerRegistryEndpoint: 'AZR-BTE-CTS-DEV-AZCR'
+              
           - task: replacetokens@3
             displayName: Replace Tokens
             inputs:
